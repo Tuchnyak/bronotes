@@ -26,6 +26,35 @@ class PersistentService : SimplePersistentStateComponent<DataState>(DataState())
 
     companion object {
         fun getInstance(project: Project) = project.getService<PersistentService>(PersistentService::class.java)
+
+        fun processNote(note: String, project: Project) {
+            val stateInstance = getInstance(project).state
+            when {
+                note.isTodo() -> stateInstance.addTodo(note)
+                note.isDone() -> stateInstance.addDone(note)
+                else -> stateInstance.addPlainNote(note)
+            }
+        }
+
+        fun doneTask(note: String, project: Project) {
+            val stateInstance = getInstance(project).state
+            stateInstance.removeTodo(note)
+            stateInstance.addDone(note.closeTask())
+        }
+
+        fun undoneTask(note: String, project: Project) {
+            val stateInstance = getInstance(project).state
+            stateInstance.removeDone(note)
+            stateInstance.addTodo(note.openTask())
+        }
     }
 
 }
+
+private val toDoPrefix = "- [ ]"
+private val donePrefix = "- [x]"
+
+private  fun String.isTodo() = this.startsWith(toDoPrefix)
+private  fun String.isDone() = this.startsWith(donePrefix)
+private fun String.closeTask(): String = "$donePrefix ${this.removePrefix(toDoPrefix).trim()}"
+private fun String.openTask(): String = "$toDoPrefix ${this.removePrefix(donePrefix).trim()}"

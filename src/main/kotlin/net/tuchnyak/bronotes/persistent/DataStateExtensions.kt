@@ -1,6 +1,5 @@
 package net.tuchnyak.bronotes.persistent
 
-import com.intellij.openapi.ui.naturalSorted
 
 /**
  * @author tuchnyak (George Shchennikov)
@@ -18,7 +17,7 @@ fun DataState.addTodo(note: String) {
 }
 
 fun DataState.removeTodo(note: String) {
-    plainNotes = todoNotes.copyAndRemove(note)
+    todoNotes = todoNotes.copyAndRemove(note)
 }
 
 fun DataState.addDone(note: String) {
@@ -30,7 +29,7 @@ fun DataState.removeDone(note: String) {
 }
 
 
-private fun <T: Any> MutableList<T>.copyAndAdd(item: T): MutableList<T> {
+private fun <T : Any> MutableList<T>.copyAndAdd(item: T): MutableList<T> {
     val tmpList = mutableListOf<T>()
     tmpList.addAll(this)
     tmpList.add(item)
@@ -38,7 +37,7 @@ private fun <T: Any> MutableList<T>.copyAndAdd(item: T): MutableList<T> {
     return tmpList
 }
 
-private fun <T: Any> MutableList<T>.copyAndRemove(item: T): MutableList<T> {
+private fun <T : Any> MutableList<T>.copyAndRemove(item: T): MutableList<T> {
     val tmpList = mutableListOf<T>()
     tmpList.addAll(this)
     tmpList.remove(item)
