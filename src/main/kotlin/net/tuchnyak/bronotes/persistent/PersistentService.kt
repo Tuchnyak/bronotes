@@ -11,19 +11,26 @@ import com.intellij.openapi.project.Project
  * @author tuchnyak (George Shchennikov)
  */
 class DataState : BaseState() {
-    var testName by string("asd")
-    var testList by list<String>()
+    var plainNotes by list<String>()
+    val todoNotes by list<String>()
+    val doneNotes by list<String>()
 }
 
-fun DataState.addItem(item: String) {
-    testList.add(item)
-    intIncrementModificationCount()
+fun DataState.addPlainNote(note: String) {
+    plainNotes = plainNotes.copyAndAdd(note)
 }
 
+private fun <T: Any> MutableList<T>.copyAndAdd(item: T): MutableList<T> {
+    val tmpList = mutableListOf<T>()
+    tmpList.addAll(this)
+    tmpList.add(item)
+
+    return tmpList
+}
 
 @Service(Service.Level.PROJECT)
 @State(
-    name = "PersistentService",
+    name = "BroNotes",
     storages = [Storage("bronotes_data_state.xml")],
     reloadable = true
 )

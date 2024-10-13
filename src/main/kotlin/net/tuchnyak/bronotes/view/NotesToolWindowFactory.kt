@@ -6,8 +6,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
+import kotlinx.datetime.Clock
 import net.tuchnyak.bronotes.persistent.PersistentService
-import net.tuchnyak.bronotes.persistent.addItem
+import net.tuchnyak.bronotes.persistent.addPlainNote
 import javax.swing.JLabel
 import javax.swing.JPanel
 
@@ -18,11 +19,13 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         invokeLater{
-            PersistentService.getInstance(project).state.addItem("WORLD")
-            PersistentService.getInstance(project).state.testName += "-NEW"
+            PersistentService.getInstance(project).state.addPlainNote("New note ${Clock.System.now()}")
 
             val panel = JPanel()
-            panel.add(JLabel(PersistentService.getInstance(project).state.testList.joinToString(",", postfix = "!")))
+            PersistentService.getInstance(project).state.plainNotes.forEachIndexed {i, pn ->
+                panel.add(JLabel("$i: $pn"))
+            }
+
             toolWindow.contentManager.addContent(
                 ContentFactory.getInstance().createContent(panel, "contenttest", false)
             )
