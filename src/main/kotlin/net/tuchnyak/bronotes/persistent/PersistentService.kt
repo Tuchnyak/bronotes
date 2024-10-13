@@ -12,20 +12,8 @@ import com.intellij.openapi.project.Project
  */
 class DataState : BaseState() {
     var plainNotes by list<String>()
-    val todoNotes by list<String>()
-    val doneNotes by list<String>()
-}
-
-fun DataState.addPlainNote(note: String) {
-    plainNotes = plainNotes.copyAndAdd(note)
-}
-
-private fun <T: Any> MutableList<T>.copyAndAdd(item: T): MutableList<T> {
-    val tmpList = mutableListOf<T>()
-    tmpList.addAll(this)
-    tmpList.add(item)
-
-    return tmpList
+    var todoNotes by list<String>()
+    var doneNotes by list<String>()
 }
 
 @Service(Service.Level.PROJECT)
