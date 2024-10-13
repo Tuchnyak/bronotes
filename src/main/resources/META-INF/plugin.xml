@@ -25,6 +25,10 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-
+        <toolWindow factoryClass="net.tuchnyak.bronotes.view.NotesToolWindowFactory"
+                    id="BroNotes"
+                    anchor="right"
+                    icon="AllIcons.Nodes.Bookmark"
+        />
     </extensions>
 </idea-plugin>
