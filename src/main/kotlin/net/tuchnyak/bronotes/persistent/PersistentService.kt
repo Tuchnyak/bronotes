@@ -25,10 +25,10 @@ class DataState : BaseState() {
 class PersistentService : SimplePersistentStateComponent<DataState>(DataState()) {
 
     companion object {
-        fun getInstance(project: Project) = project.getService<PersistentService>(PersistentService::class.java)
+        fun getDataStateInstance(project: Project) = project.getService<PersistentService>(PersistentService::class.java).state
 
         fun processNote(note: String, project: Project) {
-            val stateInstance = getInstance(project).state
+            val stateInstance = getDataStateInstance(project)
             when {
                 note.isTodo() -> stateInstance.addTodo(note)
                 note.isDone() -> stateInstance.addDone(note)
@@ -37,13 +37,13 @@ class PersistentService : SimplePersistentStateComponent<DataState>(DataState())
         }
 
         fun doneTask(note: String, project: Project) {
-            val stateInstance = getInstance(project).state
+            val stateInstance = getDataStateInstance(project)
             stateInstance.removeTodo(note)
             stateInstance.addDone(note.closeTask())
         }
 
         fun undoneTask(note: String, project: Project) {
-            val stateInstance = getInstance(project).state
+            val stateInstance = getDataStateInstance(project)
             stateInstance.removeDone(note)
             stateInstance.addTodo(note.openTask())
         }

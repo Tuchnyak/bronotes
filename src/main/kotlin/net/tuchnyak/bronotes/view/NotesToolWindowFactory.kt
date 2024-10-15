@@ -31,8 +31,7 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
             PersistentService.undoneTask(undoneTask, project)
 
             val panel = JPanel()
-            PersistentService.getInstance(project).state.plainNotes
-                .forEachIndexed {i, pn ->
+            PersistentService.getDataStateInstance(project).plainNotes.forEachIndexed { i, pn ->
                 panel.add(JLabel("$i: $pn"))
             }
 
