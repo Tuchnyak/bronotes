@@ -25,6 +25,7 @@ class DataState : BaseState() {
 class PersistentService : SimplePersistentStateComponent<DataState>(DataState()) {
 
     companion object {
+        fun getServiceInstance(project: Project) = project.getService<PersistentService>(PersistentService::class.java)
         fun getDataStateInstance(project: Project) = project.getService<PersistentService>(PersistentService::class.java).state
 
         fun processNote(note: String, project: Project) {
