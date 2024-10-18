@@ -28,9 +28,10 @@ class PersistentService : SimplePersistentStateComponent<DataState>(DataState())
         fun getServiceInstance(project: Project) = project.getService<PersistentService>(PersistentService::class.java)
         fun getDataStateInstance(project: Project) = project.getService<PersistentService>(PersistentService::class.java).state
 
-        fun processNote(note: String, project: Project) {
+        fun processNote(note: String, project: Project, isToDoInputMode: Boolean) {
             val stateInstance = getDataStateInstance(project)
             when {
+                isToDoInputMode && !note.isTask() -> stateInstance.addTodo("$toDoPrefix $note")
                 note.isTodo() -> stateInstance.addTodo(note)
                 note.isDone() -> stateInstance.addDone(note)
                 else -> stateInstance.addPlainNote(note)
@@ -52,9 +53,11 @@ class PersistentService : SimplePersistentStateComponent<DataState>(DataState())
 
 }
 
-private val toDoPrefix = "- [ ]"
-private val donePrefix = "- [x]"
+private const val taskPrefix = "- ["
+private const val toDoPrefix = "$taskPrefix ]"
+private const val donePrefix = "${taskPrefix}x]"
 
+private  fun String.isTask() = this.startsWith(taskPrefix)
 private  fun String.isTodo() = this.startsWith(toDoPrefix)
 private  fun String.isDone() = this.startsWith(donePrefix)
 private fun String.closeTask(): String = "$donePrefix ${this.removePrefix(toDoPrefix).trim()}"
