@@ -125,6 +125,7 @@ private object PanelFactory {
         text.border = BorderFactory.createEmptyBorder(gap, gap, gap, gap)
         text.preferredSize = Dimension(it.preferredSize.width, it.preferredSize.height)
         text.text = note
+        text.alignmentY = Component.CENTER_ALIGNMENT
 
         val deleteButton = JButton("X")
         when (type) {
@@ -147,7 +148,6 @@ private object PanelFactory {
         }
 
         it.maximumSize = Dimension(Int.MAX_VALUE, text.preferredSize.height)
-//        it.alignmentY = Component.CENTER_ALIGNMENT
 
         it.add(deleteButton, BorderLayout.EAST)
         it.add(text, BorderLayout.CENTER)
