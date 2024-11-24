@@ -17,10 +17,8 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         invokeLater {
             val mainPanel = MainPanel(project)
-
-            toolWindow.contentManager.addContent(
-                ContentFactory.getInstance().createContent(mainPanel.init(), "Notes", false)
-            )
+            val content = ContentFactory.getInstance().createContent(mainPanel.init(), "Notes", false)
+            toolWindow.contentManager.addContent(content)
         }
 //        invokeLater {
 //            val incr = 10

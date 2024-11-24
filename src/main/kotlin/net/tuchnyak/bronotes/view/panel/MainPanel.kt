@@ -1,9 +1,13 @@
 package net.tuchnyak.bronotes.view.panel
 
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.RadioButton
+import com.intellij.ui.content.Content
+import com.jediterm.core.input.KeyEvent
 import com.squareup.wire.internal.toUnmodifiableList
 import net.tuchnyak.bronotes.persistent.PersistentService
 import java.awt.BorderLayout
@@ -12,6 +16,10 @@ import java.awt.Component
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Insets
+import java.awt.event.ActionEvent
+import java.awt.event.HierarchyEvent
+import java.awt.event.InputEvent
+import javax.swing.AbstractAction
 import javax.swing.BorderFactory
 import javax.swing.Box
 import javax.swing.BoxLayout
@@ -22,6 +30,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.JTextArea
+import javax.swing.KeyStroke
 
 /**
  * @author tuchnyak (George Shchennikov)
@@ -98,8 +107,9 @@ private object PanelFactory {
         textBox.margin = Insets(5, 10, 5, 10)
         textBox.lineWrap = true
         textBox.rows = 3
+        textBox.requestFocusInWindow()
 
-        btn.addActionListener {
+        var addAction : () -> Unit = {
             val note = textBox.text
             if (note.isNotBlank()) {
                 PersistentService.processNote(note, project, toDoBtn.isSelected)
@@ -107,6 +117,17 @@ private object PanelFactory {
             }
             mainPanel.redraw()
         }
+
+        btn.addActionListener {
+            addAction()
+        }
+        val actionKey = "addNoteMapKey"
+        textBox.inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), actionKey)
+        textBox.actionMap.put(actionKey, object : AbstractAction() {
+            override fun actionPerformed(e: ActionEvent?) {
+                addAction()
+            }
+        })
     }
 
     fun getRadioPanel(mainPanel: MainPanel): JPanel = initCustomPanel {
