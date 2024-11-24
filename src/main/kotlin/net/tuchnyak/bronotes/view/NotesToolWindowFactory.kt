@@ -20,28 +20,6 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
             val content = ContentFactory.getInstance().createContent(mainPanel.init(), "Notes", false)
             toolWindow.contentManager.addContent(content)
         }
-//        invokeLater {
-//            val incr = 10
-//            val newTask = "- [ ] New todo SHOULD CLOSE $incr: ${Clock.System.now()}"
-//            val undoneTask = "- [x] done SHOULD OPEN $incr: ${Clock.System.now()}"
-//            PersistentService.processNote(newTask, project)
-//            PersistentService.processNote("- [ ] simple todo $incr: ${Clock.System.now()}", project)
-//            PersistentService.processNote("New note $incr: ${Clock.System.now()}", project)
-//            PersistentService.processNote("- [x] done $incr: ${Clock.System.now()}", project)
-//            PersistentService.processNote(undoneTask, project)
-//
-//            PersistentService.doneTask(newTask, project)
-//            PersistentService.undoneTask(undoneTask, project)
-//
-//            val panel = JPanel()
-//            PersistentService.getDataStateInstance(project).plainNotes.forEachIndexed { i, pn ->
-//                panel.add(JLabel("$i: $pn"))
-//            }
-//
-//            toolWindow.contentManager.addContent(
-//                ContentFactory.getInstance().createContent(panel, "Notes", false)
-//            )
-//        }
     }
 
 }
