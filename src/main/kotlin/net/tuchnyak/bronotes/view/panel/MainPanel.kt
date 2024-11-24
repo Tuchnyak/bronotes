@@ -3,6 +3,7 @@ package net.tuchnyak.bronotes.view.panel
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.components.RadioButton
 import com.squareup.wire.internal.toUnmodifiableList
 import net.tuchnyak.bronotes.persistent.PersistentService
 import java.awt.BorderLayout
@@ -34,7 +35,7 @@ private val mixedBtn = JBRadioButton("Mixed")
 private val toDoBtn = JBRadioButton("To-Do")
 
 fun MainPanel.init(): JPanel {
-    layout = BorderLayout(H_GAP,V_GAP)
+    layout = BorderLayout(H_GAP, V_GAP)
 
     // Input and radio panels
     val inputPanel = PanelFactory.getInputPanel(this, project)
@@ -163,7 +164,7 @@ private object PanelFactory {
             mainPanel.redraw()
         }
         deleteButton.addActionListener {
-            PersistentService.deleteTask(note,  project, type)
+            PersistentService.deleteTask(note, project, type)
             mainPanel.redraw()
         }
 
@@ -171,7 +172,17 @@ private object PanelFactory {
 
         it.add(deleteButton, BorderLayout.EAST)
         it.add(text, BorderLayout.CENTER)
-        it.add(checkBox, BorderLayout.WEST)         // TODO("Stub for plain notes")
+        it.add(
+            if (checkBox.isEnabled)
+                checkBox
+            else {
+                val rb = RadioButton("")
+                rb.isSelected = false
+                rb.isEnabled = false
+                rb
+            },
+            BorderLayout.WEST
+        )
     }
 
     private fun initCustomPanel(block: (panel: JPanel) -> Unit): JPanel = with(JPanel()) {
