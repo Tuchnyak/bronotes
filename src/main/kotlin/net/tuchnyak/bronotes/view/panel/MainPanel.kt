@@ -25,7 +25,8 @@ import javax.swing.JTextArea
 /**
  * @author tuchnyak (George Shchennikov)
  */
-class MainPanel(val project: Project) : JPanel()
+class MainPanel(val project: Project, var isTaskModeEnabled: Boolean = false) : JPanel() {
+}
 
 private const val H_GAP = 0
 private const val V_GAP = 20
@@ -37,30 +38,30 @@ fun MainPanel.init(): JPanel {
     layout = BorderLayout(H_GAP,V_GAP)
 
     // Input and radio panels
-    val inputPanel = PanelFactory.getInputPanel(project)
-    val radioPanel = PanelFactory.getRadioPanel()
+    val inputPanel = PanelFactory.getInputPanel(this, project)
+    val radioPanel = PanelFactory.getRadioPanel(this)
 
     // Create a container for vertical note panels with BoxLayout (Y_AXIS)
-    val container = JPanel()
-    container.layout = BoxLayout(container, BoxLayout.Y_AXIS)
+    val scrollContainer = JPanel()
+    scrollContainer.layout = BoxLayout(scrollContainer, BoxLayout.Y_AXIS)
 
     PersistentService.getDataStateInstance(project).todoNotes.toUnmodifiableList().forEach { note ->
-        container.add(PanelFactory.getNotePanel(note, PanelFactory.NoteType.TODO, project))
+        scrollContainer.add(PanelFactory.getNotePanel(this, note, NoteType.TODO, project))
     }
     PersistentService.getDataStateInstance(project).plainNotes.toUnmodifiableList().forEach { note ->
-        container.add(PanelFactory.getNotePanel(note, PanelFactory.NoteType.PLAIN, project))
+        scrollContainer.add(PanelFactory.getNotePanel(this, note, NoteType.PLAIN, project))
     }
     PersistentService.getDataStateInstance(project).doneNotes.toUnmodifiableList().forEach { note ->
-        container.add(PanelFactory.getNotePanel(note, PanelFactory.NoteType.DONE, project))
+        scrollContainer.add(PanelFactory.getNotePanel(this, note, NoteType.DONE, project))
     }
 
-    container.add(Box.createVerticalGlue())  // Will keep notes at the top if extra space exists
+    scrollContainer.add(Box.createVerticalGlue())  // Will keep notes at the top if extra space exists
 
-    val scrollPane = JBScrollPane(container)
+    val scrollPane = JBScrollPane(scrollContainer)
     scrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
     scrollPane.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
 
-    container.alignmentY = Component.TOP_ALIGNMENT
+    scrollContainer.alignmentY = Component.TOP_ALIGNMENT
     scrollPane.alignmentY = Component.TOP_ALIGNMENT
 
     add(inputPanel, BorderLayout.NORTH)
@@ -70,9 +71,16 @@ fun MainPanel.init(): JPanel {
     return this
 }
 
+private fun MainPanel.redraw() {
+    this.removeAll()
+    this.init()
+    this.revalidate()
+    this.repaint()
+}
+
 
 private object PanelFactory {
-    fun getInputPanel(project: Project): JPanel = initCustomPanel {
+    fun getInputPanel(mainPanel: MainPanel, project: Project): JPanel = initCustomPanel {
         it.layout = BorderLayout(5, 0)
 
         val btn = JButton("+")
@@ -94,10 +102,11 @@ private object PanelFactory {
                 PersistentService.processNote(note, project, toDoBtn.isSelected)
                 textBox.text = ""
             }
+            mainPanel.redraw()
         }
     }
 
-    fun getRadioPanel(): JPanel = initCustomPanel {
+    fun getRadioPanel(mainPanel: MainPanel): JPanel = initCustomPanel {
         it.layout = FlowLayout(FlowLayout.CENTER)
 
         val grButton = ButtonGroup()
@@ -107,10 +116,18 @@ private object PanelFactory {
         it.add(JLabel("input mode: "))
         it.add(mixedBtn)
         it.add(toDoBtn)
-        mixedBtn.isSelected = true
+        mixedBtn.isSelected = !mainPanel.isTaskModeEnabled
+        toDoBtn.isSelected = mainPanel.isTaskModeEnabled
+
+        mixedBtn.addActionListener {
+            mainPanel.isTaskModeEnabled = false
+        }
+        toDoBtn.addActionListener {
+            mainPanel.isTaskModeEnabled = true
+        }
     }
 
-    fun getNotePanel(note: String, type: NoteType, project: Project): JPanel = initCustomPanel {
+    fun getNotePanel(mainPanel: MainPanel, note: String, type: NoteType, project: Project): JPanel = initCustomPanel {
         it.layout = BorderLayout(5, 10)
 
         val checkBox = JCheckBox()
@@ -133,7 +150,7 @@ private object PanelFactory {
             NoteType.TODO -> checkBox.isSelected = false
             NoteType.DONE -> {
                 checkBox.isSelected = true
-                text.foreground = Color.darkGray
+                text.foreground = com.intellij.ui.JBColor.DARK_GRAY
             }
         }
         checkBox.addActionListener {
@@ -141,10 +158,11 @@ private object PanelFactory {
                 true -> PersistentService.doneTask(note, project)
                 false -> PersistentService.undoneTask(note, project)
             }
-            TODO("Redraw note panels")
+            mainPanel.redraw()
         }
         deleteButton.addActionListener {
-            TODO("Implement note deletion")
+            PersistentService.deleteTask(note,  project, type)
+            mainPanel.redraw()
         }
 
         it.maximumSize = Dimension(Int.MAX_VALUE, text.preferredSize.height)
@@ -154,12 +172,13 @@ private object PanelFactory {
         it.add(checkBox, BorderLayout.WEST)         // TODO("Stub for plain notes")
     }
 
-    enum class NoteType {
-        PLAIN, TODO, DONE
-    }
-
     private fun initCustomPanel(block: (panel: JPanel) -> Unit): JPanel = with(JPanel()) {
         block(this)
         return this
     }
 }
+
+enum class NoteType {
+    PLAIN, TODO, DONE
+}
+

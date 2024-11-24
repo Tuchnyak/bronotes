@@ -6,6 +6,7 @@ import com.intellij.openapi.components.SimplePersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
+import net.tuchnyak.bronotes.view.panel.NoteType
 
 /**
  * @author tuchnyak (George Shchennikov)
@@ -48,6 +49,15 @@ class PersistentService : SimplePersistentStateComponent<DataState>(DataState())
             val stateInstance = getDataStateInstance(project)
             stateInstance.removeDone(note)
             stateInstance.addTodo(note.openTask())
+        }
+
+        fun deleteTask(note: String, project: Project, type: NoteType) {
+            val stateInstance = getDataStateInstance(project)
+            when (type) {
+                NoteType.PLAIN -> stateInstance.plainNotes.remove(note)
+                NoteType.TODO -> stateInstance.todoNotes.remove(note)
+                NoteType.DONE -> stateInstance.doneNotes.remove(note)
+            }
         }
     }
 
