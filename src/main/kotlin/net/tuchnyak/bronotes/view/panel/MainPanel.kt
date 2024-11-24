@@ -77,6 +77,9 @@ private fun MainPanel.redraw() {
     this.repaint()
 }
 
+enum class NoteType {
+    PLAIN, TODO, DONE
+}
 
 private object PanelFactory {
     fun getInputPanel(mainPanel: MainPanel, project: Project): JPanel = initCustomPanel {
@@ -175,9 +178,5 @@ private object PanelFactory {
         block(this)
         return this
     }
-}
-
-enum class NoteType {
-    PLAIN, TODO, DONE
 }
 
