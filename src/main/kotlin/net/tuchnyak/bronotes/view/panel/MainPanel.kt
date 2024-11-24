@@ -25,8 +25,7 @@ import javax.swing.JTextArea
 /**
  * @author tuchnyak (George Shchennikov)
  */
-class MainPanel(val project: Project, var isTaskModeEnabled: Boolean = false) : JPanel() {
-}
+class MainPanel(val project: Project, var isTaskModeEnabled: Boolean = false) : JPanel()
 
 private const val H_GAP = 0
 private const val V_GAP = 20
