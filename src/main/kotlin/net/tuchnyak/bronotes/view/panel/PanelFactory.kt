@@ -1,6 +1,7 @@
 package net.tuchnyak.bronotes.view.panel
 
 import com.intellij.openapi.project.Project
+import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.RadioButton
 import com.jediterm.core.input.KeyEvent
@@ -94,26 +95,6 @@ object PanelFactory {
         val checkBox = JCheckBox()
         checkBox.isEnabled = NoteType.PLAIN != type
         checkBox.isVisible = NoteType.PLAIN != type
-
-        val text = JTextArea()
-        text.lineWrap = true
-        text.wrapStyleWord = true
-        text.isEditable = false
-        val gap = 0
-        text.border = BorderFactory.createEmptyBorder(gap, gap, gap, gap)
-        text.preferredSize = Dimension(it.preferredSize.width, it.preferredSize.height)
-        text.text = note
-        text.alignmentY = Component.CENTER_ALIGNMENT
-
-        val deleteButton = JButton("X")
-        when (type) {
-            NoteType.PLAIN -> checkBox.isSelected = false
-            NoteType.TODO -> checkBox.isSelected = false
-            NoteType.DONE -> {
-                checkBox.isSelected = true
-                text.foreground = com.intellij.ui.JBColor.DARK_GRAY
-            }
-        }
         checkBox.addActionListener {
             when (checkBox.isSelected) {
                 true -> PersistentService.doneTask(note, project)
@@ -121,11 +102,35 @@ object PanelFactory {
             }
             mainPanel.redraw()
         }
+
+        val text = JTextArea()
+        text.lineWrap = true
+        text.wrapStyleWord = true
+        text.isEditable = false
+
+        text.border = BorderFactory.createLoweredSoftBevelBorder()
+        text.text = note
+        text.alignmentY = Component.CENTER_ALIGNMENT
+        text.background = JBColor.WHITE
+
+        val deleteButton = JButton("X")
         deleteButton.addActionListener {
             PersistentService.deleteTask(note, project, type)
             mainPanel.redraw()
         }
 
+        when (type) {
+            NoteType.PLAIN -> checkBox.isSelected = false
+            NoteType.TODO -> {
+                checkBox.isSelected = false
+                text.text = note.removeTodoPrefix()
+            }
+            NoteType.DONE -> {
+                checkBox.isSelected = true
+                text.foreground = JBColor.DARK_GRAY
+                text.text = note.removeTodoPrefix()
+            }
+        }
         it.maximumSize = Dimension(Int.MAX_VALUE, text.preferredSize.height)
 
         it.add(deleteButton, BorderLayout.EAST)
@@ -141,6 +146,7 @@ object PanelFactory {
             },
             BorderLayout.WEST
         )
+        it.alignmentY = Component.TOP_ALIGNMENT
     }
 
     private fun initCustomPanel(block: (panel: JPanel) -> Unit): JPanel = with(JPanel()) {
@@ -148,4 +154,9 @@ object PanelFactory {
         return this
     }
 
+}
+
+private fun String.removeTodoPrefix(): String {
+
+    return this.substring(5).trim()
 }
