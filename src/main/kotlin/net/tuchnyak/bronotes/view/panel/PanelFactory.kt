@@ -1,11 +1,14 @@
 package net.tuchnyak.bronotes.view.panel
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Messages
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.RadioButton
 import com.jediterm.core.input.KeyEvent
 import net.tuchnyak.bronotes.persistent.PersistentService
+import net.tuchnyak.bronotes.persistent.rebuildIfTask
+import net.tuchnyak.bronotes.persistent.removeTodoPrefix
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Component
@@ -14,6 +17,8 @@ import java.awt.FlowLayout
 import java.awt.Insets
 import java.awt.event.ActionEvent
 import java.awt.event.InputEvent
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.AbstractAction
 import javax.swing.BorderFactory
 import javax.swing.ButtonGroup
@@ -40,8 +45,8 @@ object PanelFactory {
         val scroll: JScrollPane = JScrollPane(textBox)
         scroll.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
         it.add(scroll, BorderLayout.CENTER)
-        textBox.background = Color.BLACK
-        textBox.foreground = Color.WHITE
+        textBox.background = if (JBColor.isBright()) Color.WHITE else Color.BLACK
+        textBox.foreground = if (JBColor.isBright()) Color.BLACK else Color.WHITE
         textBox.margin = Insets(5, 10, 5, 10)
         textBox.lineWrap = true
         textBox.rows = 3
@@ -113,6 +118,26 @@ object PanelFactory {
         text.alignmentY = Component.CENTER_ALIGNMENT
         text.background = JBColor.WHITE
 
+        text.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent?) {
+                if (e?.clickCount == 2) {
+                    val newNote = Messages.showMultilineInputDialog(
+                        project,
+                        "Edit note:",
+                        "Edit note",
+                        text.text.rebuildIfTask(type),
+                        Messages.getInformationIcon(),
+                        null
+                    )
+                    if (newNote != null && newNote.isNotBlank()) {
+                        text.text = if (type != NoteType.PLAIN) newNote.removeTodoPrefix() else newNote
+                        PersistentService.deleteTask(note, project, type)
+                        PersistentService.processNote(newNote, project, toDoBtn.isSelected)
+                    }
+                }
+            }
+        })
+
         val deleteButton = JButton("X")
         deleteButton.addActionListener {
             PersistentService.deleteTask(note, project, type)
@@ -123,12 +148,10 @@ object PanelFactory {
             NoteType.PLAIN -> checkBox.isSelected = false
             NoteType.TODO -> {
                 checkBox.isSelected = false
-                text.text = note.removeTodoPrefix()
             }
             NoteType.DONE -> {
                 checkBox.isSelected = true
                 text.foreground = JBColor.DARK_GRAY
-                text.text = note.removeTodoPrefix()
             }
         }
         it.maximumSize = Dimension(Int.MAX_VALUE, text.preferredSize.height)
@@ -156,7 +179,3 @@ object PanelFactory {
 
 }
 
-private fun String.removeTodoPrefix(): String {
-
-    return this.substring(5).trim()
-}

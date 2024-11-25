@@ -31,23 +31,25 @@ class PersistentService : SimplePersistentStateComponent<DataState>(DataState())
         fun processNote(note: String, project: Project, isToDoInputMode: Boolean) {
             val stateInstance = getDataStateInstance(project)
             when {
-                isToDoInputMode && !note.isTask() -> stateInstance.addTodo("$toDoPrefix $note")
-                note.isTodo() -> stateInstance.addTodo(note)
-                note.isDone() -> stateInstance.addDone(note)
-                else -> stateInstance.addPlainNote(note)
+                isToDoInputMode && !note.isTask()   -> stateInstance.addTodo(note)
+                note.isTodo()                       -> stateInstance.addTodo(note.removeTodoPrefix())
+                note.isDone()                       -> stateInstance.addDone(note.removeTodoPrefix())
+                else                                -> stateInstance.addPlainNote(note)
             }
         }
 
         fun doneTask(note: String, project: Project) {
             val stateInstance = getDataStateInstance(project)
             stateInstance.removeTodo(note)
-            stateInstance.addDone(note.closeTask())
+//            stateInstance.addDone(note.closeTask())
+            stateInstance.addDone(note)
         }
 
         fun undoneTask(note: String, project: Project) {
             val stateInstance = getDataStateInstance(project)
             stateInstance.removeDone(note)
-            stateInstance.addTodo(note.openTask())
+//            stateInstance.addTodo(note.openTask())
+            stateInstance.addTodo(note)
         }
 
         fun deleteTask(note: String, project: Project, type: NoteType) {
@@ -69,5 +71,12 @@ private const val donePrefix = "${taskPrefix}x]"
 private  fun String.isTask() = this.startsWith(taskPrefix)
 private  fun String.isTodo() = this.startsWith(toDoPrefix)
 private  fun String.isDone() = this.startsWith(donePrefix)
-private fun String.closeTask(): String = "$donePrefix ${this.removePrefix(toDoPrefix).trim()}"
-private fun String.openTask(): String = "$toDoPrefix ${this.removePrefix(donePrefix).trim()}"
+//private fun String.closeTask(): String = "$donePrefix ${this.removePrefix(toDoPrefix).trim()}"
+//private fun String.openTask(): String = "$toDoPrefix ${this.removePrefix(donePrefix).trim()}"
+
+fun String.removeTodoPrefix(): String = this.substring(5).trim()
+fun String.rebuildIfTask(type: NoteType): String = when (type) {
+    NoteType.TODO -> toDoPrefix + this
+    NoteType.DONE -> donePrefix + this
+    else -> this
+}
