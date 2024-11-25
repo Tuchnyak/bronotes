@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "net.tuchnyak"
-version = "0.0.1"
+version = "0.0.2"
 
 repositories {
     mavenCentral()
