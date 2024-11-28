@@ -41,14 +41,12 @@ class PersistentService : SimplePersistentStateComponent<DataState>(DataState())
         fun doneTask(note: String, project: Project) {
             val stateInstance = getDataStateInstance(project)
             stateInstance.removeTodo(note)
-//            stateInstance.addDone(note.closeTask())
             stateInstance.addDone(note)
         }
 
         fun undoneTask(note: String, project: Project) {
             val stateInstance = getDataStateInstance(project)
             stateInstance.removeDone(note)
-//            stateInstance.addTodo(note.openTask())
             stateInstance.addTodo(note)
         }
 
@@ -71,8 +69,6 @@ private const val donePrefix = "${taskPrefix}x]"
 private  fun String.isTask() = this.startsWith(taskPrefix)
 private  fun String.isTodo() = this.startsWith(toDoPrefix)
 private  fun String.isDone() = this.startsWith(donePrefix)
-//private fun String.closeTask(): String = "$donePrefix ${this.removePrefix(toDoPrefix).trim()}"
-//private fun String.openTask(): String = "$toDoPrefix ${this.removePrefix(donePrefix).trim()}"
 
 fun String.removeTodoPrefix(): String = this.substring(5).trim()
 fun String.rebuildIfTask(type: NoteType): String = when (type) {

@@ -8,7 +8,6 @@ import com.intellij.ui.components.RadioButton
 import com.jediterm.core.input.KeyEvent
 import net.tuchnyak.bronotes.persistent.PersistentService
 import net.tuchnyak.bronotes.persistent.rebuildIfTask
-import net.tuchnyak.bronotes.persistent.removeTodoPrefix
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Component
@@ -130,9 +129,10 @@ object PanelFactory {
                         null
                     )
                     if (newNote != null && newNote.isNotBlank()) {
-                        text.text = if (type != NoteType.PLAIN) newNote.removeTodoPrefix() else newNote
+//                        text.text = if (type != NoteType.PLAIN) newNote.removeTodoPrefix() else newNote   //TODO: leave previous order
                         PersistentService.deleteTask(note, project, type)
                         PersistentService.processNote(newNote, project, toDoBtn.isSelected)
+                        mainPanel.redraw();
                     }
                 }
             }
