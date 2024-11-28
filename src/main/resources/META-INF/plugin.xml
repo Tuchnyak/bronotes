@@ -29,7 +29,7 @@
         <toolWindow factoryClass="net.tuchnyak.bronotes.view.NotesToolWindowFactory"
                     id="Bro"
                     anchor="right"
-                    icon="AllIcons.Nodes.Bookmark"
+                    icon="net.tuchnyak.bronotes.icons.PluginIcons.toolWindow"
         />
     </extensions>
 </idea-plugin>
