@@ -2,7 +2,6 @@
 <idea-plugin>
     <id>net.tuchnyak.bronotes</id>
     <name>BroNotes</name>
-    <idea-version since-build="2024.1.7" />
 
     <vendor email="george.sh.tech+bronotes@gmail.com" url="https://www.linkedin.com/in/george-sv/">George Shchennikov
     </vendor>
@@ -21,7 +20,7 @@
 
     <change-notes><![CDATA[
     <ul>
-        <li><b>1.0.1</b>: change since-build value</li>
+        <li><b>1.0.2</b>: change since-build value</li>
         <li><b>1.0.0</b>: First release!</li>
     </ul>
   ]]></change-notes>
