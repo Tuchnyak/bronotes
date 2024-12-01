@@ -2,7 +2,6 @@ package net.tuchnyak.bronotes.view.panel
 
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBScrollPane
-import com.squareup.wire.internal.toUnmodifiableList
 import net.tuchnyak.bronotes.persistent.PersistentService
 import java.awt.BorderLayout
 import java.awt.Component
@@ -30,13 +29,13 @@ fun MainPanel.init(): JPanel {
     val scrollContainer = JPanel()
     scrollContainer.layout = BoxLayout(scrollContainer, BoxLayout.Y_AXIS)
 
-    PersistentService.getDataStateInstance(project).todoNotes.toUnmodifiableList().forEach { note ->
+    PersistentService.getDataStateInstance(project).todoNotes.forEach { note ->
         scrollContainer.add(PanelFactory.getNotePanel(this, note, NoteType.TODO, project))
     }
-    PersistentService.getDataStateInstance(project).plainNotes.toUnmodifiableList().forEach { note ->
+    PersistentService.getDataStateInstance(project).plainNotes.forEach { note ->
         scrollContainer.add(PanelFactory.getNotePanel(this, note, NoteType.PLAIN, project))
     }
-    PersistentService.getDataStateInstance(project).doneNotes.toUnmodifiableList().forEach { note ->
+    PersistentService.getDataStateInstance(project).doneNotes.forEach { note ->
         scrollContainer.add(PanelFactory.getNotePanel(this, note, NoteType.DONE, project))
     }
 

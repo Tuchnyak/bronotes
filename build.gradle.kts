@@ -26,6 +26,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("241")
+        untilBuild.set("243.*")
     }
 
     signPlugin {
@@ -41,7 +42,7 @@ tasks {
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2024.2")
+        intellijIdeaCommunity("2024.3")
         instrumentationTools()
     }
 }

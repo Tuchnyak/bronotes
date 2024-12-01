@@ -14,13 +14,14 @@
         <dd>- Add plain text notes</dd>
         <dd>- Add To-Do tasks</dd>
         <dd>- To-Do markdown syntax supported for single task entry</dd>
+        <dd>- Double click to edit</dd>
     </dl>
     <p>Each list saved locally for particular project.</p>
   ]]></description>
 
     <change-notes><![CDATA[
     <ul>
-        <li><b>1.0.2</b>: change since-build value</li>
+        <li><b>1.0.2</b>: minor improvements</li>
         <li><b>1.0.0</b>: First release!</li>
     </ul>
   ]]></change-notes>
